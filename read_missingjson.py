@@ -15,11 +15,11 @@ for c in codes:
     dic2[c] = 0
 
 all_contents = []
-for i in range(10):
-    print('load', i)
-    with gzip.open(f'argonjson/{i}.json', 'r') as f:
-        content = f.read().decode("utf-8") 
-    all_contents.append(content)
+
+print('loading missing json')
+with open('argonjson/missing8.json', 'r') as f:
+    content = f.read()
+all_contents.append(content)
 
 all_contents = '\n'.join(all_contents)
 all_contents = all_contents.split('\n')
@@ -36,15 +36,15 @@ for i in range(len(all_contents)):
         label = data['label']
         label_code = dic[label]['label_code']
         dic2[label_code]+=1
+        s_cnt=0
         for s in data['samples']:
             imgurl = f"http://img1-beta.daumcdn.net/thumb/C256x256.fjpeg/?fname={s['encoded_imgurl']}"
             img_urls.append([label,label_code,imgurl])
+            s_cnt+=1
+            if s_cnt==5000:
+                break
 
 print('Number of image urls retreieved: ',len(img_urls))
 print('Number of blank classes: ', nothingcnt)
 
-print('Checking which classes were not matched: ')
-for c in codes:
-    if(dic2[c]==0):
-        print(c)
-np.savetxt('Argon434_imgurls.csv',img_urls, delimiter='\t', fmt='%s', encoding='utf-8')
+np.savetxt('Argon_missing8_imgurls.csv',img_urls, delimiter='\t', fmt='%s', encoding='utf-8')
